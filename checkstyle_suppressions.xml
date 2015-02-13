@@ -8,5 +8,5 @@
     <!-- special source folders -->
     
     <suppress checks="JavadocPackage"
-              files="java[\\/]vertx[\\/]test[\\/].*"/>
+              files="test[\\/].*"/>
 </suppressions>

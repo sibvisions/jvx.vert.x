@@ -115,7 +115,7 @@ public class DataHandler implements Handler<Buffer>
                     {
                         try
                         {
-                            server.process(new NetRequest(), new NetResponse());
+                            server.process(new Request(), new Response());
                         }
                         catch (Exception e)
                         {
@@ -162,12 +162,12 @@ public class DataHandler implements Handler<Buffer>
     //****************************************************************
 
     /**
-     * The <code>NetRequest</code> is a simple {@link IRequest} implementation
+     * The <code>Request</code> is a simple {@link IRequest} implementation
      * for accessing the socket input stream.
      * 
      * @author René Jahn
      */
-    private final class NetRequest implements IRequest
+    private final class Request implements IRequest
     {
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Class members
@@ -232,15 +232,15 @@ public class DataHandler implements Handler<Buffer>
             return bClosed;
         }
         
-    }   // NetRequest
+    }   // Request
     
     /**
-     * The <code>NetResponse</code> is a simple {@link IResponse} for accessing the
+     * The <code>Response</code> is a simple {@link IResponse} for accessing the
      * socket output stream.
      * 
      * @author René Jahn
      */
-    private final class NetResponse implements IResponse
+    private final class Response implements IResponse
     {
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Class members
@@ -286,6 +286,6 @@ public class DataHandler implements Handler<Buffer>
             return bClosed;
         }
         
-    }   // NetResponse
+    }   // Response
     
 }   // DataHandler
