@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>JVx + vert.x + jQuery</title>
+  
+<link rel="stylesheet" type="text/css" media="screen" href="css/jquery-ui.custom.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="css/ui.jqgrid.css" />
+
+<script src="js/jquery-1.7.2.min.js" type="text/javascript"></script>
+<script src="js/i18n/grid.locale-en.js" type="text/javascript"></script>
+<script src="js/jquery.jqGrid.min.js" type="text/javascript"></script>
+<script src="http://cdn.sockjs.org/sockjs-0.2.1.min.js"></script>
+<script src="js/vertxbus-2.1.js"></script>
+<script type="text/javascript">
+	$.jgrid.no_legacy_api = true;
+	$.jgrid.useJSON = true;
+</script>
+<script type="text/javascript">
+
+jQuery(document).ready(function(){
+	$.jgrid.defaults = $.extend($.jgrid.defaults,{loadui:"enable"});
+
+jQuery("#list4").jqGrid({
+	datatype: "local",
+	height: 400,
+    
+   	colNames:['ID','PLZ-ID', 'ZIP', 'STRA-ID', 'Street', 'House #', 'Floor', 'Door #'],
+   	colModel:[
+   		{name:'ID', width:60, sorttype:"int"},
+   		{name:'POST_ID', hidden:true},
+   		{name:'POST_PLZ', width:50, align:"right", sorttype:"text"},
+   		{name:'STRA_ID', hidden:true},
+   		{name:'STRA_NAME', width:200, sorttype:"text"},		
+   		{name:'HAUSNUMMER', width:60, align:"right", sorttype:"int"},		
+   		{name:'STIEGE', width:70, align:"right", sorttype:"int"},		
+        {name:'TUERNUMMER', width:60, align:"right", sorttype:"int"}
+   	],
+    
+   	multiselect: false,
+    rowNum: 100000000,
+    forceFit: true,
+    loadonce: true,
+   	caption: "Address data"
+});
+
+eb = new vertx.EventBus(window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/eventbus');
+
+eb.onopen = function() 
+{
+    eb.send('jvx.createSession', {application: 'demo', username: 'rene', password: 'rene'}, function (reply) 
+    {  
+      eb.send('jvx.fetch', {sessionId: reply.result.sessionId, object: 'adrData'}, function (reply2) 
+      {
+        mydata = reply2.result.records;
+
+        for(var i=0;i<=mydata.length;i++)
+        {
+          jQuery("#list4").jqGrid('addRowData',i+1,mydata[i]);
+        }
+          
+      });
+    });    
+};
+
+});
+</script>
+</head>
+<body>
+	<div id="RightPane">
+        <table id="list4"></table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<project name="JVx.vertx" default="start.complete">
+
+  <!-- 
+    ***************************************************************** 
+  	* information   
+  	***************************************************************** 
+  	-->
+
+  <description>Vert.x with JVx</description>
+
+  <!-- 
+  	***************************************************************** 
+  	* global properties   
+  	***************************************************************** 
+  	-->
+
+  <property name="jar.name" value="jvxvertx.jar" />
+  
+  <property name="release.name" value="jvxvertx"/>
+
+  <!-- 
+  	***************************************************************** 
+  	* general properties   
+  	***************************************************************** 
+  	-->
+
+  <property name="build" location="${basedir}/build" />
+  <property name="licence" location="${basedir}" />
+  <property name="buildnumber" location="${build}/buildnumber" />
+  <property name="temp" location="${build}/temp" />
+
+  <property name="src" location="${basedir}/src" />
+  <property name="libs" location="${basedir}/libs" />
+  <property name="classes" location="${temp}/classes" />
+
+  <property name="install" location="${build}/install" />
+  <property name="release" location="${build}/release" />
+  <property name="javadoc" location="${install}/doc" />
+
+  <!-- 
+  	***************************************************************** 
+  	* logging   
+  	***************************************************************** 
+  	-->
+
+  <record name="${build}/build.log" />
+
+  <!-- 
+  	***************************************************************** 
+  	* INTERNAL TASKS   
+  	***************************************************************** 
+  	-->
+
+  <!-- 
+	* cleanup tasks 
+	-->
+
+  <target name="clean.start">
+    <delete dir="${temp}" />
+    <delete dir="${install}" />
+    <delete dir="${release}" />
+  </target>
+
+  <target name="clean.stop">
+    <delete dir="${temp}" />
+  </target>
+
+  <!-- 
+	* compile, build tasks 
+	-->
+
+  <target name="jar">
+
+    <delete dir="${classes}" />
+    <mkdir dir="${classes}" />
+
+    <!-- compile the java code -->
+    <javac srcdir="${src}" destdir="${classes}" debug="on" deprecation="on" target="1.7" encoding="ISO-8859-1">
+      <classpath>
+        <fileset dir="${libs}">
+          <include name="*.jar" />
+        </fileset>
+      </classpath>
+    </javac>
+
+    <!-- copy ressource files -->
+    <copy todir="${classes}">
+      <fileset dir="${src}">
+        <include name="**/*" />
+        <exclude name="logging.properties" />
+        <exclude name="**/*.java" />
+        <exclude name="**/package.html" />
+      </fileset>
+    </copy>
+
+    <mkdir dir="${install}" />
+
+	<!-- buildnumber -->
+    <taskdef name="buildnr" classname="com.sibvisions.addons.ant.AntBuildNumber" classpath="${buildnumber}/addons.jar;${classes}" />
+    <buildnr buildfile="${buildnumber}/buildnr.properties" class="com.sibvisions.vertx.IPackageSetup" versionfield="VERSION" namefield="NAME"/> 
+    
+    <!-- create the jar file -->
+    <jar jarfile="${install}/${jar.name}">
+        
+	  <manifest>
+   	    <attribute name="Specification-Title" value="${build.versionstring}"/>
+        <attribute name="Specification-Version" value="b${build.number}"/>
+        <attribute name="Specification-Vendor" value="SIB Visions GmbH"/>
+        <attribute name="Implementation-Title" value="${build.versionstring}"/>
+        <attribute name="Implementation-Version" value="b${build.number} ${build.date}"/> 
+        <attribute name="Implementation-Vendor" value="SIB Visions GmbH"/>
+      </manifest>
+      
+      <fileset dir="${classes}" />
+    </jar>
+
+  </target>
+  
+  <target name="opensource" depends="jar, javadoc">
+
+    <zip destfile="${release}/${release.name}-${build.version}.zip">
+      <zipfileset dir="${install}">
+        <include name="${jar.name}" />
+      </zipfileset>
+      <zipfileset dir="${licence}">
+        <include name="LICENSE.txt" />
+        <include name="NOTICE.txt" />
+      </zipfileset>
+    </zip>
+
+    <zip destfile="${release}/${release.name}-${build.version}_src.zip">
+      <zipfileset dir="${src}" prefix="src" />
+      <zipfileset dir="${licence}">
+        <include name="LICENSE.txt" />
+        <include name="NOTICE.txt" />
+        </zipfileset>
+    </zip>    
+    
+    <zip destfile="${release}/${release.name}-${build.version}_javadoc.zip">
+      <zipfileset dir="${javadoc}" prefix="api" />
+      <zipfileset dir="${licence}">
+        <include name="LICENSE.txt" />
+      </zipfileset>
+    </zip>    
+      
+  </target>
+  
+  <!-- 
+	* quality tasks 
+	-->
+
+  <target name="javadoc">
+
+    <delete dir="${javadoc}" />
+
+	<!-- buildnumber -->
+    <taskdef name="buildnr" classname="com.sibvisions.addons.ant.AntBuildNumber" classpath="${buildnumber}/addons.jar" />
+    <buildnr buildfile="${buildnumber}/buildnr.properties" loadOnly="true"/> 
+
+    <javadoc packagenames="*" 
+      		 sourcepath="${src}" 
+      		 defaultexcludes="yes" 
+             destdir="${javadoc}" 
+             author="false" 
+             version="false" 
+             use="true" 
+             windowtitle="Vert.x with JVx (ver. ${build.version})"
+             encoding="ISO-8859-1">
+      <classpath>
+        <fileset dir="${libs}">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+      <doctitle>
+        <![CDATA[<h1>Vert.x with JVx (ver. ${build.version})</h1>]]>
+      </doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2013 SIB Visions GmbH. All Rights Reserved.</i>]]></bottom>
+	  <link href="http://docs.oracle.com/javase/7/docs/api/"/>
+	  <link href="http://vertx.io/api/java/api/"/>
+	  <link href="http://www.sibvisions.com/files/jvx/1.1/api/"/>
+    </javadoc>
+
+  </target>
+  
+  <!-- 
+  	***************************************************************** 
+  	* PUBLIC START TASKS   
+  	***************************************************************** 
+  	-->
+
+  <target name="start.complete" depends="clean.start, jar, javadoc, clean.stop" description="Creates libraries and checks quality"/>
+  <target name="start.release" depends="clean.start, opensource, clean.stop" description="Creates release libraries" />
+  
+  <target name="start.updatelibs" description="Updates all needed libraries">
+      
+    <copy todir="${libs}" file="../build/release/jvx.jar"></copy>    
+      
+  </target>
+  
+</project>
