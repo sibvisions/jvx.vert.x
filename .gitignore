@@ -12,3 +12,4 @@ hs_err_pid*
 classes
 install
 release
+/build/build.log
