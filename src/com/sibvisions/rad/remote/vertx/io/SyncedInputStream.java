@@ -18,7 +18,7 @@
  *
  * 07.02.2015 - [JR] - creation
  */
-package com.sibvisions.rad.remote.vertx;
+package com.sibvisions.rad.remote.vertx.io;
 
 import java.io.IOException;
 import java.io.InputStream;

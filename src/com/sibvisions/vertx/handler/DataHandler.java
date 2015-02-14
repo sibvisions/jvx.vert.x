@@ -29,8 +29,8 @@ import org.vertx.java.core.Handler;
 import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.streams.WriteStream;
 
-import com.sibvisions.rad.remote.vertx.BufferStream;
-import com.sibvisions.rad.remote.vertx.SyncedInputStream;
+import com.sibvisions.rad.remote.vertx.io.BufferOutputStream;
+import com.sibvisions.rad.remote.vertx.io.SyncedInputStream;
 import com.sibvisions.rad.server.IRequest;
 import com.sibvisions.rad.server.IResponse;
 import com.sibvisions.rad.server.Server;
@@ -66,6 +66,9 @@ public class DataHandler implements Handler<Buffer>
     /** the sync object for stream access. */
     private Object syncStream = new Object();
     
+    /** whether to wait for end (endless processing). */
+    private boolean bWaitForEnd;
+    
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Initialization
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,11 +81,26 @@ public class DataHandler implements Handler<Buffer>
      */
     public DataHandler(Server pServer, WriteStream<?> pStream)
     {
+        this(pServer, pStream, true);
+    }
+
+    /**
+     * Creates a new instance of <code>DataHandler</code>.
+     * 
+     * @param pServer the JVx server
+     * @param pStream the write stream
+     * @param pWaitForEnd <code>true</code> to wait for end of processing, <code>false</code> to continue processing
+     */
+    protected DataHandler(Server pServer, WriteStream<?> pStream, boolean pWaitForEnd)
+    {
         server = pServer;
         stream = pStream;
         
         inputStream = new SyncedInputStream();
+        
+        bWaitForEnd = pWaitForEnd;
     }
+    
     
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Interface implementation
@@ -100,9 +118,12 @@ public class DataHandler implements Handler<Buffer>
         
         if (thServer != null)
         {
-            synchronized(sync)
+            if (bWaitForEnd)
             {
-                sync.notify();
+                synchronized(sync)
+                {
+                    sync.notify();
+                }
             }
         }
         else
@@ -111,29 +132,34 @@ public class DataHandler implements Handler<Buffer>
             {
                 public void run()
                 {
-                    while (!ThreadHandler.isStopped(thServer))
+                    if (bWaitForEnd)
+                    {
+                        while (!ThreadHandler.isStopped(thServer))
+                        {
+                            process();
+                            
+                            synchronized (sync)
+                            {
+                                try
+                                {
+                                    sync.wait();
+                                }
+                                catch (Exception e)
+                                {
+                                    //ignore
+                                }
+                            }
+                        }
+                    }
+                    else
                     {
                         try
                         {
-                            server.process(new Request(), new Response());
+                            process();
                         }
-                        catch (Exception e)
+                        finally
                         {
-                            thServer = ThreadHandler.stop(thServer);
-                            
-                            throw new RuntimeException(e);
-                        }
-                        
-                        synchronized (sync)
-                        {
-                            try
-                            {
-                                sync.wait();
-                            }
-                            catch (Exception e)
-                            {
-                                //ignore
-                            }
+                            thServer = null;
                         }
                     }
                 }
@@ -145,16 +171,76 @@ public class DataHandler implements Handler<Buffer>
     }
     
     /**
+     * Forwards processing to the server.
+     */
+    private void process()
+    {
+        try
+        {
+            server.process(createRequest(), createResponse());
+        }
+        catch (Exception e)
+        {
+            thServer = ThreadHandler.stop(thServer);
+            
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
      * Closes the handler and stops processing of commands.
      */
     public void close()
     {
-        thServer = ThreadHandler.stop(thServer);
-
-        synchronized (sync)
+        if (bWaitForEnd)
         {
-            sync.notify();
+            thServer = ThreadHandler.stop(thServer);
+            
+            synchronized (sync)
+            {
+                sync.notify();
+            }
         }
+    }
+    
+    /**
+     * Creates a new request.
+     * 
+     * @return the request
+     */
+    protected IRequest createRequest()
+    {
+        return new Request();
+    }
+    
+    /**
+     * Creates a new response.
+     * 
+     * @return the response
+     */
+    protected IResponse createResponse()
+    {
+        return new Response();
+    }
+    
+    /**
+     * Gets access to the server.
+     * 
+     * @return the server
+     */
+    protected Server getServer()
+    {
+        return server;
+    }
+    
+    /**
+     * Gets access to the write stream.
+     * 
+     * @return the stream
+     */
+    protected WriteStream<?> getStream()
+    {
+        return stream;
     }
     
     //****************************************************************
@@ -240,50 +326,18 @@ public class DataHandler implements Handler<Buffer>
      * 
      * @author René Jahn
      */
-    private final class Response implements IResponse
+    private final class Response extends AbstractResponse
     {
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Class members
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        
-        /** whether the response is closed. */
-        private boolean bClosed;
-        
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Interface implementation
+        // Abstract methods implementation
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         /**
          * {@inheritDoc}
          */
-        public void setProperty(String pKey, Object pValue)
+        protected OutputStream createOutputStream()
         {
-        }
-        
-        /**
-         * {@inheritDoc}
-         */
-        public OutputStream getOutputStream() throws IOException
-        {
-            bClosed = false;
-
-            return new BufferStream(stream);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void close()
-        {
-            bClosed = true;
-        }
-        
-        /**
-         * {@inheritDoc}
-         */
-        public boolean isClosed()
-        {
-            return bClosed;
+            return new BufferOutputStream(stream);
         }
         
     }   // Response

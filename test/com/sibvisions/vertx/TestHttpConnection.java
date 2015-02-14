@@ -54,7 +54,6 @@ public class TestHttpConnection extends com.sibvisions.rad.remote.TestHttpConnec
 	{
 		server = new HttpServer();
 		server.setPort(8080);
-		server.setServicePath("/services/Server");
 		server.start();
 	}	
 
@@ -64,7 +63,10 @@ public class TestHttpConnection extends com.sibvisions.rad.remote.TestHttpConnec
     @AfterClass
     public static void afterClass()
     {
-        server.stop();
+        if (server != null)
+        {
+            server.stop();
+        }
     }
 	
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,7 +79,12 @@ public class TestHttpConnection extends com.sibvisions.rad.remote.TestHttpConnec
     @Override
 	protected IConnection createConnection(ISerializer pSerializer) throws Throwable
 	{
-        return new HttpConnection("http://localhost:8080/services/Server");
+        HttpConnection con = new HttpConnection("http://localhost:8080/services/Server");
+        con.setUploadURL(con.getServletURL().replace("/Server", "/Upload"));
+        con.setDownloadURL(con.getServletURL().replace("/Server", "/Download"));
+        con.setRetryCount(0);
+        
+        return con;
 	}
 
 }	// TestHttpConnection

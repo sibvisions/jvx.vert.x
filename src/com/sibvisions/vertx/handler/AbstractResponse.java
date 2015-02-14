@@ -16,78 +16,76 @@
  *
  * History
  *
- * 07.02.2015 - [JR] - creation
+ * 14.02.2015 - [JR] - creation
  */
-package com.sibvisions.rad.remote.vertx;
+package com.sibvisions.vertx.handler;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.streams.WriteStream;
+import com.sibvisions.rad.server.IResponse;
 
 /**
- * The <code>BufferStream</code> is a simple OutputStream that stores written content in
- * a {@link Buffer}.
+ * The <code>AbstractResponse</code> is a simple {@link IResponse} for accessing an
+ * output stream.
  * 
  * @author René Jahn
  */
-public class BufferStream extends OutputStream
+abstract class AbstractResponse implements IResponse
 {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Class members
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-    /** the socket. */
-    private WriteStream<?> stream;
-    
-    /** the buffer. */
-    private Buffer buffer = new Buffer();
+    /** whether the response is closed. */
+    private boolean bClosed;
     
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // Initialization
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    /**
-     * Creates a new instance of <code>BufferStream</code>.
-     * 
-     * @param pStream the write stream
-     */
-    public BufferStream(WriteStream<?> pStream)
-    {
-        stream = pStream;
-    }
-    
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // User-defined methods
+    // Interface implementation
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void write(int pByte) throws IOException
+    public void setProperty(String pKey, Object pValue)
     {
-        buffer.appendByte((byte)pByte);
     }
     
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void flush()
+    public OutputStream getOutputStream() throws IOException
     {
-        stream.write(buffer);
+        bClosed = false;
+        
+        return createOutputStream();
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    @Override
     public void close()
     {
-        flush();
+        bClosed = true;
     }
     
-}   // BufferStream
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isClosed()
+    {
+        return bClosed;
+    }
 
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Abstract methods
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    /**
+     * Creates a new {@link OutputStream}.
+     * 
+     * @return the stream
+     */
+    protected abstract OutputStream createOutputStream();
+    
+}   // AbstractResponse

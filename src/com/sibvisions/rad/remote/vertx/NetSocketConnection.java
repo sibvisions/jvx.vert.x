@@ -37,6 +37,8 @@ import org.vertx.java.core.net.NetSocket;
 
 import com.sibvisions.rad.remote.AbstractSerializedConnection;
 import com.sibvisions.rad.remote.ISerializer;
+import com.sibvisions.rad.remote.vertx.io.BufferOutputStream;
+import com.sibvisions.rad.remote.vertx.io.SyncedInputStream;
 
 /**
  * The <code>NetSocketConnection</code> is an {@link javax.rad.remote.IConnection} that uses a {@link NetSocket} for
@@ -227,7 +229,7 @@ public class NetSocketConnection extends AbstractSerializedConnection
 	    
         inputStream = new SyncedInputStream();
 
-        return new BufferStream(socket);
+        return new BufferOutputStream(socket);
 	}
 
 	/**
