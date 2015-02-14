@@ -20,20 +20,14 @@
  */
 package com.sibvisions.vertx;
 
-import javax.rad.io.FileHandle;
-import javax.rad.io.RemoteFileHandle;
 import javax.rad.remote.IConnection;
-import javax.rad.remote.MasterConnection;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 import com.sibvisions.rad.remote.BaseConnectionTest;
 import com.sibvisions.rad.remote.ISerializer;
 import com.sibvisions.rad.remote.vertx.NetSocketConnection;
-import com.sibvisions.util.type.ResourceUtil;
 
 /**
  * Tests the functionality of {@link NetSocketServer} via {@link NetSocketConnection}.
@@ -86,48 +80,5 @@ public class TestNetSocketConnection extends BaseConnectionTest
 	{
 		return new NetSocketConnection("127.0.0.1", 8888);
 	}
-	
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // User-defined methods
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    /**
-     * Tests getting content length.
-     * 
-     * @throws Throwable if test failed
-     */
-    @Test
-    public void testUpload() throws Throwable
-    {
-        IConnection con = createConnection();
-        
-        MasterConnection appcon = new MasterConnection(con);
-        
-        appcon.setApplicationName("demo");
-        appcon.setUserName("rene");
-        appcon.setPassword("rene");
-        appcon.open();
-
-        try
-        {
-            FileHandle fh = new FileHandle(ResourceUtil.getFileForClass("/com/sibvisions/DeliveryNoteTemplate.rtf"));
-            
-            RemoteFileHandle rfh = (RemoteFileHandle)appcon.callAction("createRTFReport", fh);
-    
-            Assert.assertTrue(rfh.getLength() > 0);
-            Assert.assertTrue(fh.getLength() > rfh.getLength());
-            
-            /*
-            File fiTemp = File.createTempFile("rtfReportResult", ".rtf");
-            FileUtil.save(fiTemp, rfh.getInputStream());
-            
-            FileViewer.open(fiTemp);
-            */
-        }
-        finally
-        {
-            appcon.close();
-        }
-    }
 
 }	// TestNetSocketConnection

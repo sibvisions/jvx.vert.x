@@ -24,7 +24,7 @@ import org.vertx.java.core.Handler;
 
 /**
  * The <code>ExceptionHandler</code> is a {@link Handler} that delegates a
- * handler-exception to {@link DataHandler}.
+ * handler-exception to {@link AbstractDataHandler}.
  * 
  * @author René Jahn
  */
@@ -35,7 +35,7 @@ public class ExceptionHandler implements Handler<Throwable>
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     /** the data handler. */
-    private DataHandler dataHandler;
+    private AbstractDataHandler dataHandler;
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Initialization
@@ -46,7 +46,7 @@ public class ExceptionHandler implements Handler<Throwable>
      * 
      * @param pHandler the data handler
      */
-    public ExceptionHandler(DataHandler pHandler)
+    public ExceptionHandler(AbstractDataHandler pHandler)
     {
         dataHandler = pHandler;
     }

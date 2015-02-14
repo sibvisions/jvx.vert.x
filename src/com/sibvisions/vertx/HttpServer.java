@@ -49,7 +49,7 @@ import com.sibvisions.rad.server.AbstractSession;
 import com.sibvisions.rad.server.Server;
 import com.sibvisions.util.ObjectCache;
 import com.sibvisions.util.type.FileUtil;
-import com.sibvisions.vertx.handler.DataHandler;
+import com.sibvisions.vertx.handler.AbstractDataHandler;
 import com.sibvisions.vertx.handler.ExceptionHandler;
 import com.sibvisions.vertx.handler.HttpDataHandler;
 import com.sibvisions.vertx.handler.StopHandler;
@@ -255,15 +255,15 @@ public class HttpServer implements ISessionListener
 
 		        if (sPath.equals(sServicePath))
 		    	{
-		            doService(pRequest);
+		            handleService(pRequest);
 		    	}
 		    	else if (sPath.equals(sUploadPath))
 		    	{
-		    	    doUpload(pRequest);
+		    	    handleUpload(pRequest);
 		    	}
 		    	else if (sPath.equals(sDownloadPath))
 		    	{
-		    	    doDownload(pRequest);
+		    	    handleDownload(pRequest);
 		    	}
 		    	else
 		    	{
@@ -468,9 +468,9 @@ public class HttpServer implements ISessionListener
 	 * 
 	 * @param pRequest the request
 	 */
-	protected void doService(HttpServerRequest pRequest)
+	private void handleService(HttpServerRequest pRequest)
 	{
-        DataHandler dataHandler = new HttpDataHandler(srvJVx, pRequest.response()); 
+        AbstractDataHandler dataHandler = new HttpDataHandler(srvJVx, pRequest.response()); 
 
         pRequest.dataHandler(dataHandler);
         pRequest.endHandler(new StopHandler(dataHandler));
@@ -482,7 +482,7 @@ public class HttpServer implements ISessionListener
      * 
      * @param pRequest the request
      */
-	private void doUpload(final HttpServerRequest pRequest)
+	private void handleUpload(final HttpServerRequest pRequest)
 	{
         pRequest.dataHandler(new Handler<Buffer>()
         {
@@ -539,7 +539,7 @@ public class HttpServer implements ISessionListener
      * 
      * @param pRequest the request
      */
-    private void doDownload(HttpServerRequest pRequest)
+    private void handleDownload(HttpServerRequest pRequest)
     {
         String sKey = pRequest.params().get("KEY");
         

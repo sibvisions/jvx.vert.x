@@ -72,9 +72,7 @@ public class BufferOutputStream extends OutputStream
         
         if (buffer.length() > 4096)
         {
-            stream.write(buffer);
-            
-            buffer = new Buffer();
+            flush();
         }
     }
 
@@ -89,6 +87,8 @@ public class BufferOutputStream extends OutputStream
     public synchronized void flush()
     {
         stream.write(buffer);
+        
+        buffer = new Buffer();
     }
     
     /**

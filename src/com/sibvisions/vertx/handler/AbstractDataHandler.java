@@ -37,12 +37,12 @@ import com.sibvisions.rad.server.Server;
 import com.sibvisions.util.ThreadHandler;
 
 /**
- * The <code>DataHandler</code> receives data from the client and delegates command
+ * The <code>AbstractDataHandler</code> receives data from the client and delegates command
  * execution to the JVx server.
  * 
  * @author René Jahn
  */
-public class DataHandler implements Handler<Buffer>
+public abstract class AbstractDataHandler implements Handler<Buffer>
 {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Class members
@@ -74,24 +74,24 @@ public class DataHandler implements Handler<Buffer>
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     /**
-     * Creates a new instance of <code>DataHandler</code>.
+     * Creates a new instance of <code>AbstractDataHandler</code>.
      * 
      * @param pServer the JVx server
      * @param pStream the write stream
      */
-    public DataHandler(Server pServer, WriteStream<?> pStream)
+    public AbstractDataHandler(Server pServer, WriteStream<?> pStream)
     {
         this(pServer, pStream, true);
     }
 
     /**
-     * Creates a new instance of <code>DataHandler</code>.
+     * Creates a new instance of <code>AbstractDataHandler</code>.
      * 
      * @param pServer the JVx server
      * @param pStream the write stream
      * @param pWaitForEnd <code>true</code> to wait for end of processing, <code>false</code> to continue processing
      */
-    protected DataHandler(Server pServer, WriteStream<?> pStream, boolean pWaitForEnd)
+    protected AbstractDataHandler(Server pServer, WriteStream<?> pStream, boolean pWaitForEnd)
     {
         server = pServer;
         stream = pStream;
@@ -165,7 +165,7 @@ public class DataHandler implements Handler<Buffer>
                 }
             });
             
-            thServer.setName("DataHandler@" + System.identityHashCode(this));
+            thServer.setName("AbstractDataHandler@" + System.identityHashCode(this));
             thServer.start();
         }
     }
@@ -173,7 +173,7 @@ public class DataHandler implements Handler<Buffer>
     /**
      * Forwards processing to the server.
      */
-    private void process()
+    protected void process()
     {
         try
         {
@@ -241,6 +241,20 @@ public class DataHandler implements Handler<Buffer>
     protected WriteStream<?> getStream()
     {
         return stream;
+    }
+    
+    /**
+     * Reads a single byte from the input stream.
+     * 
+     * @return the read byte
+     * @throws IOException if reading failed
+     */
+    protected InputStream getInputStream() throws IOException
+    {
+        synchronized (syncStream)
+        {
+            return inputStream;
+        }        
     }
     
     //****************************************************************
@@ -342,4 +356,4 @@ public class DataHandler implements Handler<Buffer>
         
     }   // Response
     
-}   // DataHandler
+}   // AbstractDataHandler

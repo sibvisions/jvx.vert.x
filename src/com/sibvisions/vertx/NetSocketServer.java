@@ -34,8 +34,9 @@ import org.vertx.java.core.net.NetSocket;
 
 import com.sibvisions.rad.server.AbstractSession;
 import com.sibvisions.rad.server.Server;
-import com.sibvisions.vertx.handler.DataHandler;
+import com.sibvisions.vertx.handler.AbstractDataHandler;
 import com.sibvisions.vertx.handler.ExceptionHandler;
+import com.sibvisions.vertx.handler.NetDataHandler;
 import com.sibvisions.vertx.handler.StopHandler;
 
 /**
@@ -66,7 +67,7 @@ public class NetSocketServer implements ISessionListener
 	private String sClusterHost;
 
 	/** the interface for listening. */
-	private String sInterface;
+	private String sInterface = "localhost";
 	
 	/** the cluster port. */
 	private int iClusterPort = -1;
@@ -224,8 +225,8 @@ public class NetSocketServer implements ISessionListener
 		{
 			public void handle(NetSocket pSocket)
 			{
-			    DataHandler dataHandler = new DataHandler(srvJVx, pSocket); 
-			    
+			    AbstractDataHandler dataHandler = new NetDataHandler(srvJVx, pSocket); 
+
 		    	pSocket.dataHandler(dataHandler);
 		    	pSocket.endHandler(new StopHandler(dataHandler));
 		    	pSocket.exceptionHandler(new ExceptionHandler(dataHandler));

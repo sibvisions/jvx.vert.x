@@ -30,12 +30,12 @@ import com.sibvisions.rad.server.Server;
 import com.sibvisions.vertx.io.HttpResponseOutputStream;
 
 /**
- * The <code>HttpDataHandler</code> extends the {@link DataHandler} and uses a {@link HttpResponseOutputStream}
+ * The <code>HttpDataHandler</code> extends the {@link AbstractDataHandler} and uses a {@link HttpResponseOutputStream}
  * for handling the response.
  * 
  * @author René Jahn
  */
-public class HttpDataHandler extends DataHandler
+public class HttpDataHandler extends AbstractDataHandler
 {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Initialization

@@ -24,7 +24,7 @@ import org.vertx.java.core.Handler;
 
 /**
  * The <code>StopHandler</code> is a {@link Handler} that delegates handler-end to
- * {@link DataHandler}.
+ * {@link AbstractDataHandler}.
  * 
  * @author René Jahn
  */
@@ -35,7 +35,7 @@ public class StopHandler implements Handler<Void>
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     /** the data handler. */
-    private DataHandler dataHandler;
+    private AbstractDataHandler dataHandler;
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Initialization
@@ -46,7 +46,7 @@ public class StopHandler implements Handler<Void>
      * 
      * @param pHandler the data handler
      */
-    public StopHandler(DataHandler pHandler)
+    public StopHandler(AbstractDataHandler pHandler)
     {
         dataHandler = pHandler;
     }

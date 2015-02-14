@@ -178,7 +178,7 @@ public class SyncedInputStream extends InputStream
             return -1;
         }
         
-        return (int)buffer.getByte(iPos++);
+        return buffer.getByte(iPos++) & 0xFF;
     }
     
     /**
