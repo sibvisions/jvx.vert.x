@@ -170,6 +170,8 @@ public class NetSocketConnection extends AbstractSerializedConnection
 		client = vertx.createNetClient();
 		client.setReconnectAttempts(3);
 		client.setReconnectInterval(1000);
+		
+		setRetryCount(0);
 	}
 	
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
