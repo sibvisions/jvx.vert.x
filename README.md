@@ -1,2 +1,65 @@
-# jvx.vert.x
-JVx connector for vert.x
+Overview
+========
+
+A connector for JVx, implemented with vert.x 
+
+Usage
+=====
+
+### NetSocket
+
+**Start server**
+
+```java
+NetSocketServer server = new NetSocketServer();
+server.setPort(8888);
+server.setInterface("127.0.0.1");
+server.start();
+```
+
+**Call an action**
+
+```java
+IConnection con = new NetSocketConnection("127.0.0.1", 8888);
+
+MasterConnection appcon = new MasterConnection(con);
+appcon.setApplicationName("application");
+appcon.setUserName("username");
+appcon.setPassword("password");
+appcon.open();
+
+appcon.callAction("startWorkFlow", new Integer(5));
+
+appcon.close();
+```
+
+### Http
+
+**Start server**
+
+```java
+server = new HttpServer();
+server.setPort(8080);
+server.start();
+```
+
+**Call an action**
+
+```java
+String url = "http://localhost:8080/services/Server";
+
+IConnection con = new HttpConnection(url);
+con.setUploadURL(url.replace("/Server", "/Upload"));
+con.setDownloadURL(url.replace("/Server", "/Download"));
+
+MasterConnection appcon = new MasterConnection(con);
+appcon.setApplicationName("application");
+appcon.setUserName("username");
+appcon.setPassword("password");
+appcon.open();
+
+appcon.callAction("startWorkFlow", new Integer(5));
+
+appcon.close();
+```
+ 

@@ -101,15 +101,18 @@ public class NetSocketConnection extends AbstractSerializedConnection
 	
 	/** the server hostname or ip. */
 	private String sHost;
-	
-	/** the server port. */
-	private int iPort = 8888;
 
+    /** the initial connection id for closing the net client. */
+    private Object oInitialConId = null;
+	
 	/** the input stream. */
 	private SyncedInputStream inputStream;
 	
     /** the transfer input stream. */
     private SyncedInputStream isTransfer;
+
+    /** the server port. */
+    private int iPort = 8888;
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Initialization
@@ -372,6 +375,11 @@ public class NetSocketConnection extends AbstractSerializedConnection
 		socket.write(new Buffer(new byte[] {STREAM_COMMUNICATION}));
 		
 		super.open(pConnectionInfo);
+		
+        if (oInitialConId == null)
+        {
+            oInitialConId = pConnectionInfo.getConnectionId();
+        }
 	}
 
 	/**
@@ -380,13 +388,19 @@ public class NetSocketConnection extends AbstractSerializedConnection
 	@Override
 	public void close(ConnectionInfo pConnectionInfo) throws Throwable
 	{
-		super.close(pConnectionInfo);
-		
-		closeTransfer();
-		
-        closeSocket();
+        //be sure to close the client not too early
+        boolean bCloseClient = pConnectionInfo.getConnectionId() == oInitialConId;
 
-        client.close();
+        super.close(pConnectionInfo);
+		
+		if (bCloseClient)
+		{
+    		closeTransfer();
+    		
+            closeSocket();
+    
+            client.close();
+		}
 	}
 	
 	/**
