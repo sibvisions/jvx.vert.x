@@ -46,11 +46,11 @@ server.start();
 **Call an action**
 
 ```java
-String url = "http://localhost:8080/services/Server";
+String url = "http://localhost:8080/services/";
 
-IConnection con = new HttpConnection(url);
-con.setUploadURL(url.replace("/Server", "/Upload"));
-con.setDownloadURL(url.replace("/Server", "/Download"));
+IConnection con = new HttpConnection(url + "Server");
+con.setUploadURL(url + "Upload");
+con.setDownloadURL(url + "Download");
 
 MasterConnection appcon = new MasterConnection(con);
 appcon.setApplicationName("application");
