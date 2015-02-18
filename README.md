@@ -62,4 +62,13 @@ appcon.callAction("startWorkFlow", new Integer(5));
 
 appcon.close();
 ```
- 
+
+### Verticle 
+
+```bash
+bin/vertx run com.sibvisions.vertx.verticle.NetSocketVerticle -cp classes;libs/jvx.jar
+```
+
+```bash
+bin/vertx run com.sibvisions.vertx.verticle.HttpVerticle -cp classes;libs/jvx.jar
+```
