@@ -21,6 +21,13 @@
 package com.sibvisions.vertx;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpHeaders;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.http.impl.MimeMapping;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,18 +39,6 @@ import javax.rad.io.RemoteFileHandle;
 import javax.rad.server.ISession;
 import javax.rad.server.InjectObject;
 import javax.rad.server.event.ISessionListener;
-
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.VertxFactory;
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.http.HttpHeaders;
-import org.vertx.java.core.http.HttpServerRequest;
-import org.vertx.java.core.http.HttpServerResponse;
-import org.vertx.java.core.http.impl.MimeMapping;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.core.sockjs.SockJSServer;
 
 import com.sibvisions.rad.server.AbstractSession;
 import com.sibvisions.rad.server.Server;
@@ -71,7 +66,7 @@ public class HttpServer implements ISessionListener
 	private Vertx vertx;
 	
 	/** the vertx http server. */
-	private org.vertx.java.core.http.HttpServer srvVertx;
+	private io.vertx.core.http.HttpServer srvVertx;
 	
 	/** the JVx server. */
 	private Server srvJVx;
@@ -91,14 +86,8 @@ public class HttpServer implements ISessionListener
     /** the webcontent path. */
 	private String sWebContentPath = "WebContent";
 
-	/** the cluster hostname or ip. */
-	private String sClusterHost = null;
-
     /** the interface for listening. */
     private String sInterface = "localhost";
-	
-	/** the cluster port. */
-	private int iClusterPort = -1;
 	
 	/** the http port. */
 	private int iPort = 8080;
@@ -116,24 +105,25 @@ public class HttpServer implements ISessionListener
 	{
 		Hashtable<String, String> htParams = Util.parseCommandLineProperties(pArgs);
 		
-		int iPort;
-		
-		try
-		{
-			iPort = Integer.parseInt(htParams.get("cluster-port"));
-		}
-		catch (Exception e)
-		{
-			iPort = -1;
-		}
-		
 		HttpServer srv = new HttpServer();
-		srv.setClusterHost(htParams.get("cluster-host"));
+		srv.setInterface(htParams.get("interface"));
 
-		if (iPort > 0)
+        int iPort;
+        
+        try
+        {
+            iPort = Integer.parseInt(htParams.get("port"));
+        }
+        catch (Exception e)
+        {
+            iPort = -1;
+        }
+
+        if (iPort > 0)
 		{
-			srv.setClusterPort(iPort);
+			srv.setPort(iPort);
 		}
+        
 		srv.start();
 		
 		synchronized(srv)
@@ -181,7 +171,7 @@ public class HttpServer implements ISessionListener
 	{
 		if (ijoVertx == null)
 		{
-			ijoVertx = new InjectObject("vertx", vertx);
+			ijoVertx = new InjectObject("vertx", vertx, true);
 		}
 		
 		((AbstractSession)pSession).putObject(ijoVertx);
@@ -213,7 +203,7 @@ public class HttpServer implements ISessionListener
 	 * 
 	 * @return the server instance
 	 */
-	public org.vertx.java.core.http.HttpServer getHttpServer()
+	public io.vertx.core.http.HttpServer getHttpServer()
 	{
 		return srvVertx; 
 	}
@@ -225,28 +215,9 @@ public class HttpServer implements ISessionListener
 	{
 		if (vertx == null)
 		{
-			if (sClusterHost != null)
-			{
-				//clustered
-				if (iClusterPort > 0)
-				{
-					vertx = VertxFactory.newVertx(iClusterPort, sClusterHost);
-				}
-				else
-				{
-					vertx = VertxFactory.newVertx(sClusterHost);
-				}
-			}
-			else
-			{
-				//not clustered
-				vertx = VertxFactory.newVertx();
-			}
+			vertx = Vertx.vertx();
 		}
 
-		EventBusMapper mapper = new EventBusMapper(srvJVx);
-		mapper.register(vertx.eventBus());
-		
 		srvVertx = vertx.createHttpServer().requestHandler(new Handler<HttpServerRequest>() 
 		{
 		    public void handle(HttpServerRequest pRequest) 
@@ -271,12 +242,6 @@ public class HttpServer implements ISessionListener
 		    	}
 		    }
 		});
-		
-	    JsonArray permitted = new JsonArray();
-	    permitted.add(new JsonObject()); // no limits
-	    
-	    SockJSServer sockJSServer = vertx.createSockJSServer(srvVertx);
-	    sockJSServer.bridge(new JsonObject().putString("prefix", "/eventbus"), permitted, permitted);
 	    
 		srvVertx.listen(iPort, sInterface);	
 	}
@@ -393,46 +358,6 @@ public class HttpServer implements ISessionListener
 	}
 
 	/**
-	 * Sets the hostname for clustering.
-	 * 
-	 * @param pHost the hostname or ip
-	 */
-	public void setClusterHost(String pHost)
-	{
-		sClusterHost = pHost;
-	}
-	
-	/**
-	 * Gets the cluster hostname.
-	 * 
-	 * @return the hostname or ip
-	 */
-	public String getClusterHost()
-	{
-		return sClusterHost;
-	}
-	
-	/**
-	 * Sets the port for clustering.
-	 * 
-	 * @param pPort the port number
-	 */
-	public void setClusterPort(int pPort)
-	{
-		iClusterPort = pPort;
-	}
-	
-	/**
-	 * Gets the cluster port.
-	 * 
-	 * @return the port number
-	 */
-	public int getClusterPort()
-	{
-		return iClusterPort;
-	}
-	
-	/**
 	 * Sets the path to the webcontent directory.
 	 * 
 	 * @param pPath the path e.g. WebContent
@@ -472,7 +397,7 @@ public class HttpServer implements ISessionListener
 	{
         AbstractDataHandler dataHandler = new HttpDataHandler(srvJVx, pRequest.response()); 
 
-        pRequest.dataHandler(dataHandler);
+        pRequest.handler(dataHandler);
         pRequest.endHandler(new StopHandler(dataHandler));
         pRequest.exceptionHandler(new ExceptionHandler(dataHandler));
 	}
@@ -484,7 +409,7 @@ public class HttpServer implements ISessionListener
      */
 	private void handleUpload(final HttpServerRequest pRequest)
 	{
-        pRequest.dataHandler(new Handler<Buffer>()
+        pRequest.handler(new Handler<Buffer>()
         {
             private OutputStream os;
             
@@ -578,7 +503,7 @@ public class HttpServer implements ISessionListener
             
             while ((iLen = in.read(byContent)) >= 0)
             {
-                buffer = new Buffer();
+                buffer = Buffer.buffer();
                 buffer.appendBytes(byContent, 0, iLen);
 
                 response.write(buffer);

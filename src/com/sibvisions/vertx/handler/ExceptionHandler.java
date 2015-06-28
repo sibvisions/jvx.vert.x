@@ -20,7 +20,7 @@
  */
 package com.sibvisions.vertx.handler;
 
-import org.vertx.java.core.Handler;
+import io.vertx.core.Handler;
 
 /**
  * The <code>ExceptionHandler</code> is a {@link Handler} that delegates a

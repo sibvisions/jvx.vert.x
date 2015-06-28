@@ -20,9 +20,9 @@
  */
 package com.sibvisions.vertx.io;
 
-import java.io.IOException;
+import io.vertx.core.http.HttpServerResponse;
 
-import org.vertx.java.core.http.HttpServerResponse;
+import java.io.IOException;
 
 import com.sibvisions.rad.remote.vertx.io.BufferOutputStream;
 

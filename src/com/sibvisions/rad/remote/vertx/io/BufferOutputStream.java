@@ -20,11 +20,11 @@
  */
 package com.sibvisions.rad.remote.vertx.io;
 
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.streams.WriteStream;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.streams.WriteStream;
 
 /**
  * The <code>BufferOutputStream</code> is a simple OutputStream that stores written content into
@@ -39,10 +39,10 @@ public class BufferOutputStream extends OutputStream
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     /** the write stream. */
-    protected WriteStream<?> stream;
+    protected WriteStream<Buffer> stream;
     
     /** the buffer. */
-    protected Buffer buffer = new Buffer();
+    protected Buffer buffer = Buffer.buffer();
     
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Initialization
@@ -53,7 +53,7 @@ public class BufferOutputStream extends OutputStream
      * 
      * @param pStream the write stream
      */
-    public BufferOutputStream(WriteStream<?> pStream)
+    public BufferOutputStream(WriteStream<Buffer> pStream)
     {
         stream = pStream;
     }
@@ -88,7 +88,7 @@ public class BufferOutputStream extends OutputStream
     {
         stream.write(buffer);
         
-        buffer = new Buffer();
+        buffer = Buffer.buffer();
     }
     
     /**

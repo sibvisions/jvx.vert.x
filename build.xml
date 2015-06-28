@@ -193,7 +193,7 @@
   
   <target name="start.updatelibs" description="Updates all needed libraries">
       
-    <copy todir="${libs}" file="../build/release/jvx.jar"></copy>    
+    <copy todir="${libs}" file="../jvx/trunk/java/build/release/jvx.jar"></copy>    
       
   </target>
   

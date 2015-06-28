@@ -53,10 +53,10 @@ public class TestNetSocketConnection extends BaseConnectionTest
 	@BeforeClass
 	public static void beforeClass()
 	{
-	    server = new NetSocketServer();
-	    server.setPort(8888);
-	    server.setInterface("127.0.0.1");
-	    server.start();
+//	    server = new NetSocketServer();
+//	    server.setPort(8888);
+//	    server.setInterface("127.0.0.1");
+//	    server.start();
 	}	
 
     /**
@@ -74,11 +74,11 @@ public class TestNetSocketConnection extends BaseConnectionTest
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Overwritten methods
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	
+
 	@Override
 	protected IConnection createConnection(ISerializer pSerializer) throws Throwable
 	{
-		return new NetSocketConnection("127.0.0.1", 8888);
+		return new NetSocketConnection("localhost", 8888);
 	}
-
+	
 }	// TestNetSocketConnection

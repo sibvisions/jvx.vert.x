@@ -20,10 +20,11 @@
  */
 package com.sibvisions.vertx.handler;
 
-import java.io.OutputStream;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.streams.WriteStream;
 
-import org.vertx.java.core.http.HttpServerResponse;
-import org.vertx.java.core.streams.WriteStream;
+import java.io.OutputStream;
 
 import com.sibvisions.rad.server.IResponse;
 import com.sibvisions.rad.server.Server;
@@ -47,7 +48,7 @@ public class HttpDataHandler extends AbstractDataHandler
      * @param pServer the JVx server
      * @param pStream the write stream
      */
-    public HttpDataHandler(Server pServer, WriteStream<?> pStream)
+    public HttpDataHandler(Server pServer, WriteStream<Buffer> pStream)
     {
         super(pServer, pStream, false);
     }

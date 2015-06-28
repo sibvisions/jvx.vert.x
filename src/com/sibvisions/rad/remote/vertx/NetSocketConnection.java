@@ -21,6 +21,14 @@
  */
 package com.sibvisions.rad.remote.vertx;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.net.NetClient;
+import io.vertx.core.net.NetClientOptions;
+import io.vertx.core.net.NetSocket;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FilterInputStream;
@@ -38,20 +46,13 @@ import javax.rad.io.RemoteFileHandle;
 import javax.rad.io.TransferContext;
 import javax.rad.remote.ConnectionInfo;
 
-import org.vertx.java.core.AsyncResult;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.VertxFactory;
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.net.NetClient;
-import org.vertx.java.core.net.NetSocket;
-
 import com.sibvisions.rad.remote.AbstractSerializedConnection;
 import com.sibvisions.rad.remote.ISerializer;
 import com.sibvisions.rad.remote.vertx.io.BufferOutputStream;
 import com.sibvisions.rad.remote.vertx.io.SyncedInputStream;
 import com.sibvisions.util.io.MagicByteInputStream;
 import com.sibvisions.util.io.NonClosingInputStream;
+import com.sibvisions.util.log.LoggerFactory;
 import com.sibvisions.util.type.FileUtil;
 
 /**
@@ -163,16 +164,12 @@ public class NetSocketConnection extends AbstractSerializedConnection
 		
 		if (pVertx == null)
 		{
-			vertx = VertxFactory.newVertx();
+			vertx = Vertx.vertx();
 		}
 		else
 		{
 			vertx = pVertx;
 		}
-		
-		client = vertx.createNetClient();
-		client.setReconnectAttempts(3);
-		client.setReconnectInterval(1000);
 		
 		setRetryCount(0);
 	}
@@ -226,7 +223,7 @@ public class NetSocketConnection extends AbstractSerializedConnection
     {
         openTransfer();
     
-        socketTransfer.write(new Buffer(new byte[] {STREAM_UPLOAD}));
+        socketTransfer.write(Buffer.buffer(new byte[] {STREAM_UPLOAD}));
             
         BufferOutputStream bos = new BufferOutputStream(socketTransfer);
             
@@ -307,15 +304,21 @@ public class NetSocketConnection extends AbstractSerializedConnection
 	{
 		closeSocket();
 		
+        NetClientOptions options = new NetClientOptions();
+        options.setReconnectAttempts(3);
+        options.setConnectTimeout(5000);
+        options.setReconnectInterval(1000);
+        
+        client = vertx.createNetClient(options);
 		client.connect(iPort, sHost, new Handler<AsyncResult<NetSocket>>()
 		{
-			public void handle(AsyncResult<NetSocket> pCommunication)
+			public void handle(final AsyncResult<NetSocket> pCommunication)
 			{
 			    NetSocket sock = pCommunication.result();
 			    
 			    if (sock != null)
 			    {
-    			    sock.dataHandler(new Handler<Buffer>()
+    			    sock.handler(new Handler<Buffer>()
     				{
     					public void handle(Buffer pBuffer)
     					{
@@ -346,13 +349,21 @@ public class NetSocketConnection extends AbstractSerializedConnection
     					        inputStream.finish();
     					    }
     					}
-    			
     				});
 			    }
-			    
-				synchronized (NetSocketConnection.this)
+
+			    synchronized (NetSocketConnection.this)
 				{
-	                socket = sock;
+			        if (pCommunication.succeeded())
+			        {
+			            socket = sock;
+			        }
+			        else
+			        {
+			            LoggerFactory.getInstance(NetSocketConnection.class).error(pCommunication.cause());
+
+	                    socket = null;
+			        }
 
 	                NetSocketConnection.this.notify();
 				}
@@ -372,7 +383,7 @@ public class NetSocketConnection extends AbstractSerializedConnection
 			throw new ConnectException("Can't establish connection!"); 
 		}
 
-		socket.write(new Buffer(new byte[] {STREAM_COMMUNICATION}));
+		socket.write(Buffer.buffer(new byte[] {STREAM_COMMUNICATION}));
 		
 		super.open(pConnectionInfo);
 		
@@ -398,8 +409,11 @@ public class NetSocketConnection extends AbstractSerializedConnection
     		closeTransfer();
     		
             closeSocket();
-    
-            client.close();
+
+            if (client != null)
+            {
+                client.close();
+            }
 		}
 	}
 	
@@ -439,11 +453,12 @@ public class NetSocketConnection extends AbstractSerializedConnection
 	{
 		if (socket != null)
 		{
+		    inputStream.finish();
             inputStream = null;
 
             socket.exceptionHandler(null);
-			socket.endHandler(null);
-			socket.dataHandler(null);
+            socket.endHandler(null);
+			socket.handler(null);
 			
 			socket.close();
 			socket = null;
@@ -457,11 +472,12 @@ public class NetSocketConnection extends AbstractSerializedConnection
 	{
 	    if (socketTransfer != null)
 	    {
+            isTransfer.finish();
             isTransfer = null;
-    
-            socketTransfer.exceptionHandler(null);
+            
             socketTransfer.endHandler(null);
-            socketTransfer.dataHandler(null);
+            socketTransfer.exceptionHandler(null);
+            socketTransfer.handler(null);
             
             socketTransfer.close();
             socketTransfer = null;
@@ -485,9 +501,11 @@ public class NetSocketConnection extends AbstractSerializedConnection
             socketTransfer = null;
         }
         
-        clientTransfer = vertx.createNetClient();
-        clientTransfer.setReconnectAttempts(3);
-        clientTransfer.setReconnectInterval(1000);
+        NetClientOptions options = new NetClientOptions();
+        options.setReconnectAttempts(3);
+        options.setReconnectInterval(1000);
+        
+        clientTransfer = vertx.createNetClient(options);
         
         isTransfer = new SyncedInputStream();
         
@@ -499,7 +517,7 @@ public class NetSocketConnection extends AbstractSerializedConnection
                 
                 if (sock != null)
                 {
-                    sock.dataHandler(new Handler<Buffer>()
+                    sock.handler(new Handler<Buffer>()
                     {
                         public void handle(Buffer pBuffer)
                         {
@@ -622,7 +640,7 @@ public class NetSocketConnection extends AbstractSerializedConnection
     
             try
             {
-                socketTransfer.write(new Buffer(new byte[] {STREAM_DOWNLOAD, pOperation}));
+                socketTransfer.write(Buffer.buffer(new byte[] {STREAM_DOWNLOAD, pOperation}));
                 
                 // REQUEST
                 

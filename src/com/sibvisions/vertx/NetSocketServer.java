@@ -20,17 +20,17 @@
  */
 package com.sibvisions.vertx;
 
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.net.NetServer;
+import io.vertx.core.net.NetServerOptions;
+import io.vertx.core.net.NetSocket;
+
 import java.util.Hashtable;
 
 import javax.rad.server.ISession;
 import javax.rad.server.InjectObject;
 import javax.rad.server.event.ISessionListener;
-
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.VertxFactory;
-import org.vertx.java.core.net.NetServer;
-import org.vertx.java.core.net.NetSocket;
 
 import com.sibvisions.rad.server.AbstractSession;
 import com.sibvisions.rad.server.Server;
@@ -63,14 +63,8 @@ public class NetSocketServer implements ISessionListener
 	/** the injection object for our vert.x instance. */
 	private InjectObject ijoVertx;
 	
-	/** the cluster hostname or ip. */
-	private String sClusterHost;
-
 	/** the interface for listening. */
 	private String sInterface = "localhost";
-	
-	/** the cluster port. */
-	private int iClusterPort = -1;
 	
 	/** the port. */
 	private int iPort = 8888;
@@ -88,24 +82,29 @@ public class NetSocketServer implements ISessionListener
 	{
 		Hashtable<String, String> htParams = Util.parseCommandLineProperties(pArgs);
 		
-		int iPort;
-		
-		try
-		{
-			iPort = Integer.parseInt(htParams.get("cluster-port"));
-		}
-		catch (Exception e)
-		{
-			iPort = -1;
-		}
-		
 		NetSocketServer srv = new NetSocketServer();
-		srv.setClusterHost(htParams.get("cluster-host"));
-
-		if (iPort > 0)
+		
+		if (htParams.get("interface") != null)
 		{
-			srv.setClusterPort(iPort);
+    		srv.setInterface(htParams.get("interface"));
 		}
+		
+        int iPort;
+        
+        try
+        {
+            iPort = Integer.parseInt(htParams.get("port"));
+        }
+        catch (Exception e)
+        {
+            iPort = -1;
+        }
+        
+        if (iPort > 0)
+		{
+			srv.setPort(iPort);
+		}
+        
 		srv.start();
 				
 		synchronized(srv)
@@ -153,7 +152,7 @@ public class NetSocketServer implements ISessionListener
 	{
 		if (ijoVertx == null)
 		{
-			ijoVertx = new InjectObject("vertx", vertx);
+		    ijoVertx = new InjectObject("vertx", vertx, true);
 		}
 		
 		((AbstractSession)pSession).putObject(ijoVertx);
@@ -197,29 +196,14 @@ public class NetSocketServer implements ISessionListener
 	{
 		if (vertx == null)
 		{
-			if (sClusterHost != null)
-			{
-				//clustered
-				if (iClusterPort > 0)
-				{
-					vertx = VertxFactory.newVertx(iClusterPort, sClusterHost);
-				}
-				else
-				{
-					vertx = VertxFactory.newVertx(sClusterHost);
-				}
-			}
-			else
-			{
-				//not clustered
-				vertx = VertxFactory.newVertx();
-			}
+			vertx = Vertx.vertx();
 		}
 		
-		EventBusMapper mapper = new EventBusMapper(srvJVx);
-		mapper.register(vertx.eventBus());
-		
-		srvVertx = vertx.createNetServer();
+		NetServerOptions options = new NetServerOptions();
+		options.setTcpKeepAlive(true);
+		options.setTcpNoDelay(true);
+
+		srvVertx = vertx.createNetServer(options);
 		
 		srvVertx.connectHandler(new Handler<NetSocket>()
 		{
@@ -227,7 +211,7 @@ public class NetSocketServer implements ISessionListener
 			{
 			    AbstractDataHandler dataHandler = new NetDataHandler(srvJVx, pSocket); 
 
-		    	pSocket.dataHandler(dataHandler);
+		    	pSocket.handler(dataHandler);
 		    	pSocket.endHandler(new StopHandler(dataHandler));
 		    	pSocket.exceptionHandler(new ExceptionHandler(dataHandler));
 			}
@@ -291,46 +275,6 @@ public class NetSocketServer implements ISessionListener
 	public int getPort()
 	{
 		return iPort;
-	}
-
-	/**
-	 * Sets the hostname for clustering.
-	 * 
-	 * @param pHost the hostname or ip
-	 */
-	public void setClusterHost(String pHost)
-	{
-		sClusterHost = pHost;
-	}
-	
-	/**
-	 * Gets the cluster hostname.
-	 * 
-	 * @return the hostname or ip
-	 */
-	public String getClusterHost()
-	{
-		return sClusterHost;
-	}
-	
-	/**
-	 * Sets the port for clustering.
-	 * 
-	 * @param pPort the port number
-	 */
-	public void setClusterPort(int pPort)
-	{
-		iClusterPort = pPort;
-	}
-	
-	/**
-	 * Gets the cluster port.
-	 * 
-	 * @return the port number
-	 */
-	public int getClusterPort()
-	{
-		return iClusterPort;
 	}
 	
 }	// NetSocketServer

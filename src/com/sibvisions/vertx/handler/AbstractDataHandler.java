@@ -20,14 +20,14 @@
  */
 package com.sibvisions.vertx.handler;
 
+import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.streams.WriteStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Hashtable;
-
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.streams.WriteStream;
 
 import com.sibvisions.rad.remote.vertx.io.BufferOutputStream;
 import com.sibvisions.rad.remote.vertx.io.SyncedInputStream;
@@ -55,7 +55,7 @@ public abstract class AbstractDataHandler implements Handler<Buffer>
     private Server server;
     
     /** the socket. */
-    private WriteStream<?> stream;
+    private WriteStream<Buffer> stream;
     
     /** the input stream. */
     private SyncedInputStream inputStream;
@@ -79,7 +79,7 @@ public abstract class AbstractDataHandler implements Handler<Buffer>
      * @param pServer the JVx server
      * @param pStream the write stream
      */
-    public AbstractDataHandler(Server pServer, WriteStream<?> pStream)
+    public AbstractDataHandler(Server pServer, WriteStream<Buffer> pStream)
     {
         this(pServer, pStream, true);
     }
@@ -91,7 +91,7 @@ public abstract class AbstractDataHandler implements Handler<Buffer>
      * @param pStream the write stream
      * @param pWaitForEnd <code>true</code> to wait for end of processing, <code>false</code> to continue processing
      */
-    protected AbstractDataHandler(Server pServer, WriteStream<?> pStream, boolean pWaitForEnd)
+    protected AbstractDataHandler(Server pServer, WriteStream<Buffer> pStream, boolean pWaitForEnd)
     {
         server = pServer;
         stream = pStream;

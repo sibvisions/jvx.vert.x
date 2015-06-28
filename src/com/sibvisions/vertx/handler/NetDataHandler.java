@@ -20,6 +20,10 @@
  */
 package com.sibvisions.vertx.handler;
 
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.net.NetSocket;
+import io.vertx.core.streams.WriteStream;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -30,9 +34,6 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.rad.io.IFileHandle;
 import javax.rad.io.RemoteFileHandle;
-
-import org.vertx.java.core.net.NetSocket;
-import org.vertx.java.core.streams.WriteStream;
 
 import com.sibvisions.rad.remote.vertx.NetSocketConnection;
 import com.sibvisions.rad.remote.vertx.io.BufferOutputStream;
@@ -69,7 +70,7 @@ public class NetDataHandler extends AbstractDataHandler
      * @param pServer the JVx server
      * @param pStream the write stream
      */
-    public NetDataHandler(Server pServer, WriteStream<?> pStream)
+    public NetDataHandler(Server pServer, WriteStream<Buffer> pStream)
     {
         super(pServer, pStream);
     }

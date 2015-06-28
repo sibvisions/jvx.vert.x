@@ -20,16 +20,16 @@
  */
 package com.sibvisions.vertx.verticle;
 
-import org.vertx.java.platform.Verticle;
+import io.vertx.core.AbstractVerticle;
 
 import com.sibvisions.vertx.HttpServer;
 
 /**
- * The <code>HttpVerticle</code> is the {@link Verticle} for {@link HttpServer}.
+ * The <code>HttpVerticle</code> is the {@link io.vertx.core.Verticle} for {@link HttpServer}.
  * 
  * @author René Jahn
  */
-public class HttpVerticle extends Verticle
+public class HttpVerticle extends AbstractVerticle
 {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Class members

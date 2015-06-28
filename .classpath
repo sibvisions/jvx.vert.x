@@ -3,15 +3,22 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/JVx"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_09"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="libs/hazelcast-3.2.3.jar"/>
-	<classpathentry kind="lib" path="libs/jackson-annotations-2.2.2.jar"/>
-	<classpathentry kind="lib" path="libs/jackson-core-2.2.2.jar"/>
-	<classpathentry kind="lib" path="libs/jackson-databind-2.2.2.jar"/>
-	<classpathentry kind="lib" path="libs/netty-all-4.0.21.Final.jar"/>
-	<classpathentry kind="lib" path="libs/vertx-core-2.1.5.jar" sourcepath="D:/dev_tools/libs/vert.x/2.1.5/vertx-core/src/main/java"/>
-	<classpathentry kind="lib" path="libs/vertx-hazelcast-2.1.5.jar"/>
-	<classpathentry kind="lib" path="libs/vertx-platform-2.1.5.jar"/>
+	<classpathentry kind="lib" path="libs/hazelcast-3.5.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-annotations-2.5.0.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-core-2.5.3.jar"/>
+	<classpathentry kind="lib" path="libs/jackson-databind-2.5.3.jar"/>
+	<classpathentry kind="lib" path="libs/jvx.jar"/>
+	<classpathentry kind="lib" path="libs/netty-buffer-4.0.28.Final.jar"/>
+	<classpathentry kind="lib" path="libs/netty-codec-4.0.28.Final.jar"/>
+	<classpathentry kind="lib" path="libs/netty-codec-http-4.0.28.Final.jar"/>
+	<classpathentry kind="lib" path="libs/netty-common-4.0.28.Final.jar"/>
+	<classpathentry kind="lib" path="libs/netty-handler-4.0.28.Final.jar"/>
+	<classpathentry kind="lib" path="libs/netty-transport-4.0.28.Final.jar"/>
+	<classpathentry kind="lib" path="libs/vertx-core-3.0.0.jar" sourcepath="D:/dev_tools/libs/vert.x/vert.x-3.0.0/src/main"/>
+	<classpathentry kind="lib" path="libs/vertx-hazelcast-3.0.0.jar"/>
+	<classpathentry kind="lib" path="libs/vertx-service-proxy-3.0.0.jar"/>
+	<classpathentry kind="lib" path="libs/vertx-web-3.0.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_40"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -20,10 +20,10 @@
  */
 package com.sibvisions.rad.remote.vertx.io;
 
+import io.vertx.core.buffer.Buffer;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.vertx.java.core.buffer.Buffer;
 
 /**
  * The <code>SyncedInputStream</code> is a simple {@link InputStream} that syncs the
@@ -55,7 +55,7 @@ public class SyncedInputStream extends InputStream
      */
     public SyncedInputStream()
     {
-        buffer = new Buffer();
+        buffer = Buffer.buffer();
     }
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,7 +66,7 @@ public class SyncedInputStream extends InputStream
      * {@inheritDoc}
      */
     @Override
-    public int read(byte[] pByte, int pOffset, int pLength)
+    public int read(byte[] pByte, int pOffset, int pLength) throws IOException
     {
         if (bFinish)
         {
@@ -93,7 +93,7 @@ public class SyncedInputStream extends InputStream
         {
             iBufferLength = buffer.length();
         }
-        
+
         if (iPos == iBufferLength)
         {
             synchronized(this)
@@ -107,13 +107,18 @@ public class SyncedInputStream extends InputStream
                     //ignore
                 }
             }
+            
+            if (bFinish)
+            {
+                throw new IOException("Stream already closed!");
+            }
         }
 
         synchronized (buffer)
         {
             iBufferLength = buffer.length();
         }
-        
+
         if (iPos == iBufferLength)
         {
             return -1;
@@ -134,7 +139,7 @@ public class SyncedInputStream extends InputStream
         
         return iLength;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -220,7 +225,7 @@ public class SyncedInputStream extends InputStream
         synchronized(this)
         {
             bFinish = true;
-
+            
             notify();
         }           
     }

@@ -20,16 +20,16 @@
  */
 package com.sibvisions.vertx.verticle;
 
-import org.vertx.java.platform.Verticle;
+import io.vertx.core.AbstractVerticle;
 
 import com.sibvisions.vertx.NetSocketServer;
 
 /**
- * The <code>NetSocketVerticle</code> is the {@link Verticle} for {@link NetSocketServer}.
+ * The <code>NetSocketVerticle</code> is the {@link io.vertx.core.Verticle} for {@link NetSocketServer}.
  * 
  * @author René Jahn
  */
-public class NetSocketVerticle extends Verticle
+public class NetSocketVerticle extends AbstractVerticle
 {
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Class members
