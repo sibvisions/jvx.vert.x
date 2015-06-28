@@ -4,5 +4,5 @@
 <mapEntry key="JAVA_OPTS" value="-DConfiguration.basedir=${workspace_loc:JVx}"/>
 </mapAttribute>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="D:\dev_tools\libs\vert.x\2.1.5\bin\vertx.bat"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="run com.sibvisions.vertx.verticle.SocketVerticle -cp ${workspace_loc:JVx.vertx}/classes;${workspace_loc:JVx}/classes;${workspace_loc:JVx.vertx}/libs/jvx.jar;${workspace_loc:JVx}/lib/hsqldb.jar"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="run com.sibvisions.vertx.verticle.NetSocketVerticle -cp ${workspace_loc:JVx.vertx}/classes;${workspace_loc:JVx}/classes;${workspace_loc:JVx.vertx}/libs/jvx.jar;${workspace_loc:JVx}/lib/hsqldb.jar"/>
 </launchConfiguration>
