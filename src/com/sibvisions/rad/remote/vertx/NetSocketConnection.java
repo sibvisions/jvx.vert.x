@@ -57,7 +57,7 @@ import com.sibvisions.util.type.FileUtil;
 
 /**
  * The <code>NetSocketConnection</code> is an {@link javax.rad.remote.IConnection} that uses a {@link NetSocket} for
- * the communication to a {@link org.vertx.java.core.net.NetServer}.
+ * the communication to a {@link io.vertx.core.net.NetServer}.
  * 
  * @author René Jahn
  */

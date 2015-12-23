@@ -51,7 +51,7 @@ import com.sibvisions.vertx.handler.StopHandler;
 
 /**
  * The <code>HttpServer</code> uses {@link Server} and offers a lightweight http server based
- * on {@link org.vertx.java.core.http.HttpServer}. It offers an eventbus bridge for relevant
+ * on {@link io.vertx.core.http.HttpServer}. It offers an eventbus bridge for relevant
  * server functionality.
  * 
  * @author René Jahn
@@ -199,7 +199,7 @@ public class HttpServer implements ISessionListener
 	}
 	
 	/**
-	 * Gets the current {@link org.vertx.java.core.http.HttpServer}.
+	 * Gets the current {@link io.vertx.core.http.HttpServer}.
 	 * 
 	 * @return the server instance
 	 */

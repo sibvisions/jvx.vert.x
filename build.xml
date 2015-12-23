@@ -51,6 +51,23 @@
   	***************************************************************** 
   	-->
 
+  <target name="proxy.check">
+    <condition property="proxy.enabled">
+      <and>
+        <socket server="10.0.0.1" port="3128"/>
+      </and>
+    </condition>
+  </target>
+  
+  <target name="proxy" depends="proxy.check" if="proxy.enabled">
+    <property name="proxy.host" value="10.0.0.1"/>
+    <property name="proxy.port" value="3128"/>
+    <property name="proxy.user" value=""/>
+    <property name="proxy.pass" value=""/>
+      
+    <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}" proxyuser="${proxy.user}" proxypassword="${proxy.password}"/>
+  </target>
+  
   <!-- 
 	* cleanup tasks 
 	-->
@@ -75,7 +92,7 @@
     <mkdir dir="${classes}" />
 
     <!-- compile the java code -->
-    <javac srcdir="${src}" destdir="${classes}" debug="on" deprecation="on" target="1.7" encoding="ISO-8859-1">
+    <javac srcdir="${src}" destdir="${classes}" debug="on" deprecation="on" encoding="ISO-8859-1">
       <classpath>
         <fileset dir="${libs}">
           <include name="*.jar" />
@@ -149,7 +166,7 @@
 	* quality tasks 
 	-->
 
-  <target name="javadoc">
+  <target name="javadoc" depends="proxy">
 
     <delete dir="${javadoc}" />
 
@@ -166,6 +183,10 @@
              use="true" 
              windowtitle="Vert.x with JVx (ver. ${build.version})"
              encoding="ISO-8859-1">
+      <arg value="-J-Dhttp.proxyHost=${proxy.host}"/>
+      <arg value="-J-Dhttp.proxyPort=${proxy.port}"/>
+      <arg value="-J-Dhttp.proxyUser=${proxy.user}"/>
+      <arg value="-J-Dhttp.proxyPassword=${proxy.password}"/>
       <classpath>
         <fileset dir="${libs}">
           <include name="**/*.jar" />
@@ -175,9 +196,9 @@
         <![CDATA[<h1>Vert.x with JVx (ver. ${build.version})</h1>]]>
       </doctitle>
       <bottom><![CDATA[<i>Copyright &#169; 2013 SIB Visions GmbH. All Rights Reserved.</i>]]></bottom>
-	  <link href="http://docs.oracle.com/javase/7/docs/api/"/>
-	  <link href="http://vertx.io/api/java/api/"/>
-	  <link href="http://www.sibvisions.com/files/jvx/1.1/api/"/>
+	  <link href="http://docs.oracle.com/javase/8/docs/api/"/>
+	  <link href="http://vertx.io/docs/apidocs/"/>
+	  <link href="http://www.sibvisions.com/files/jvx/2.4/api/"/>
     </javadoc>
 
   </target>

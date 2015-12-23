@@ -41,7 +41,7 @@ import com.sibvisions.vertx.handler.StopHandler;
 
 /**
  * The <code>NetSocketServer</code> uses {@link Server} and offers a lightweight socket server based
- * on {@link org.vertx.java.core.net.NetServer}.
+ * on {@link io.vertx.core.net.NetServer}.
  * 
  * @author René Jahn
  */
@@ -180,7 +180,7 @@ public class NetSocketServer implements ISessionListener
 	}
 	
 	/**
-	 * Gets the current {@link NetServer).
+	 * Gets the current {@link NetServer}.
 	 * 
 	 * @return the server instance
 	 */
