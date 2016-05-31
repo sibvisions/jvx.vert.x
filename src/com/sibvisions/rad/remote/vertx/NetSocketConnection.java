@@ -441,6 +441,15 @@ public class NetSocketConnection extends AbstractSerializedConnection
 	{
 	    return inputStream;
 	}
+	
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Throwable prepareException(Throwable pThrowable)
+    {
+        return new Exception("Network communication failed!", pThrowable);
+    }  	
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// User-defined methods
