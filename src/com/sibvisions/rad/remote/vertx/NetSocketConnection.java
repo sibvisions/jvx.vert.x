@@ -284,7 +284,7 @@ public class NetSocketConnection extends AbstractSerializedConnection
     @Override
     protected Object initCall(ConnectionInfo pConnectionInfo)
     {
-        return new TransferContext(this, this);
+        return new TransferContext(pConnectionInfo, this, this);
     }
     
     /**
