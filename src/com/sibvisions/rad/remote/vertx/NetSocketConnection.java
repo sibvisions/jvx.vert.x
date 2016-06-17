@@ -448,7 +448,7 @@ public class NetSocketConnection extends AbstractSerializedConnection
     @Override
     protected Throwable prepareException(Throwable pThrowable)
     {
-        return new Exception("Network communication failed!", pThrowable);
+        return fillInStackTrace(pThrowable);
     }  	
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
