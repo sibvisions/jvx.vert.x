@@ -20,7 +20,7 @@
  */
 package com.sibvisions.vertx;
 
-import javax.rad.remote.IConnection;
+import jvx.rad.remote.IConnection;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

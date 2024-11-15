@@ -34,11 +34,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Hashtable;
 
-import javax.rad.io.IFileHandle;
-import javax.rad.io.RemoteFileHandle;
-import javax.rad.server.ISession;
-import javax.rad.server.InjectObject;
-import javax.rad.server.event.ISessionListener;
+import jvx.rad.io.IFileHandle;
+import jvx.rad.io.RemoteFileHandle;
+import jvx.rad.server.ISession;
+import jvx.rad.server.InjectObject;
+import jvx.rad.server.event.ISessionListener;
 
 import com.sibvisions.rad.server.AbstractSession;
 import com.sibvisions.rad.server.Server;

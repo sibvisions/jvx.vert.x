@@ -52,11 +52,18 @@
   	-->
 
   <target name="proxy.check">
-    <condition property="proxy.enabled">
-      <and>
-        <socket server="10.0.0.1" port="3128"/>
-      </and>
-    </condition>
+    <typedef name="canreach" classname="com.sibvisions.addons.ant.CanReach" classpath="${buildnumber}/addons.jar" />
+
+    <if>
+      <istrue value="true" />
+      <then>
+	    <condition property="proxy.enabled">
+	      <and>
+	        <canreach host="10.0.0.1" port="3128"/>
+	      </and>
+	    </condition>
+      </then>
+    </if>
   </target>
   
   <target name="proxy" depends="proxy.check" if="proxy.enabled">

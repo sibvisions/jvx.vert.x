@@ -32,8 +32,8 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.rad.io.IFileHandle;
-import javax.rad.io.RemoteFileHandle;
+import jvx.rad.io.IFileHandle;
+import jvx.rad.io.RemoteFileHandle;
 
 import com.sibvisions.rad.remote.vertx.NetSocketConnection;
 import com.sibvisions.rad.remote.vertx.io.BufferOutputStream;

@@ -39,12 +39,12 @@ import java.net.ConnectException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.rad.io.IDownloadExecutor;
-import javax.rad.io.IFileHandle;
-import javax.rad.io.IUploadExecutor;
-import javax.rad.io.RemoteFileHandle;
-import javax.rad.io.TransferContext;
-import javax.rad.remote.ConnectionInfo;
+import jvx.rad.io.IDownloadExecutor;
+import jvx.rad.io.IFileHandle;
+import jvx.rad.io.IUploadExecutor;
+import jvx.rad.io.RemoteFileHandle;
+import jvx.rad.io.TransferContext;
+import jvx.rad.remote.ConnectionInfo;
 
 import com.sibvisions.rad.remote.AbstractSerializedConnection;
 import com.sibvisions.rad.remote.ISerializer;
@@ -56,7 +56,7 @@ import com.sibvisions.util.log.LoggerFactory;
 import com.sibvisions.util.type.FileUtil;
 
 /**
- * The <code>NetSocketConnection</code> is an {@link javax.rad.remote.IConnection} that uses a {@link NetSocket} for
+ * The <code>NetSocketConnection</code> is an {@link jvx.rad.remote.IConnection} that uses a {@link NetSocket} for
  * the communication to a {@link io.vertx.core.net.NetServer}.
  * 
  * @author René Jahn
